@@ -50,7 +50,7 @@ const Collection = () => {
     switch (sortType) {
       case 'low-high':
         setFilterProducts(fpCopy.sort((a, b) => a.price - b.price)); 
-        break ;
+        break;
       case 'high-low':
         setFilterProducts(fpCopy.sort((a, b) => b.price - a.price)); 
         break;
