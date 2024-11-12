@@ -1,6 +1,7 @@
 import React, { useContext, useEffect, useState } from 'react';
 import { useParams } from 'react-router-dom';
 import { ShopContext } from '../Context/ShopContext';
+import RelatedProduct from '../Components/RelatedProduct';
 
 const Product = () => {
   const { productId } = useParams();
@@ -22,7 +23,8 @@ const Product = () => {
   };
 
   return productData ? (
-    <div className="container mx-auto p-6 flex flex-col lg:flex-row gap-8">
+    <div className="container mx-auto p-6  gap-8">
+      <div className='flex flex-col lg:flex-row '>
       {/* Product Images */}
       <div className="lg:w-1/2 flex items-start gap-4">
         {/* Thumbnails */}
@@ -47,7 +49,7 @@ const Product = () => {
       </div>
 
       {/* Product Information */}
-      <div className="flex-1">
+      <div className="flex-1 ml-6">
         <h1 className="text-3xl font-semibold text-gray-800">{productData.name}</h1>
         
         {/* Ratings */}
@@ -92,10 +94,13 @@ const Product = () => {
         <hr className="my-8" />
         <div className="space-y-2 text-gray-600">
           <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
-          <p>Integer ac lacus in quam tristique cursus.</p>
+          <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit.</p>
           <p>Nam sed urna ac risus dignissim convallis.</p>
         </div>
       </div>
+      </div>
+        <h2 className="text-2xl font-semibold mb-6">Related Products</h2>
+          <RelatedProduct category={productData.category} subCategory={productData.subCategory}/>
     </div>
   ) : (
     <div className="flex justify-center items-center min-h-screen text-gray-500">Loading product...</div>
