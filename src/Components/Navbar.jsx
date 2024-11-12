@@ -31,12 +31,15 @@ const Navbar = () => {
           <img src="./search_icon.png" alt="" onClick={()=>setShowSearch(true)}  className="w-5 cursor-pointer"/>
         </div>
         {/* Profile icon with dropdown */}
+        
         <div className="group relative">
+        <NavLink to='/login'>
           <img
             className="w-5 cursor-pointer"
             src="./profile_icon.png"
             alt="Profile"
           />
+          </NavLink>
           <div className="group-hover:block hidden absolute dropdown-menu right-0 pt-4">
             <div className="flex flex-col gap-2 w-36 py-3 px-5 bg-slate-100">
               <p className="cursor-pointer hover:text-black">My Profile</p>
@@ -55,12 +58,14 @@ const Navbar = () => {
         </Link>
 
         {/* Menu icon for mobile: displays sidebar when clicked */}
+        <NavLink to='/login'>
         <img
           onClick={() => setVisible(true)}
           src="./menu_icon.png"
           className="w-5 cursor-pointer sm:hidden"
           alt="Menu"
         />
+        </NavLink>
       </div>
 
       {/* SIDEBAR FOR SMALL DEVICE */}
