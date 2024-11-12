@@ -1,7 +1,7 @@
-import { createContext, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { products } from "../../public/assets";
+import toast from "react-hot-toast";
 console.log(products);
-
 
 export const ShopContext = createContext();
 
@@ -10,6 +10,86 @@ const ShopContextProvider = (props) => {
   const delivery_fee = 10;
   const [serach , setSearch] = useState('')
   const [showSearch, setShowSearch] = useState(false)
+  const [cartItems, setCartItems] = useState({})
+
+  const addToCart = async (itemId,size) => {
+    let cartData = structuredClone(cartItems)
+      if (!size) {
+        toast.error("Select the size")
+        return;
+      }
+    
+    if (cartData[itemId]) {
+      if (cartData[itemId][size]) {
+        cartData[itemId][size] += 1
+      }
+      else{
+        cartData[itemId][size] = 1
+      }
+    }
+    else{
+      cartData[itemId] = {}
+      cartData[itemId][size] =1
+    }
+    setCartItems(cartData)
+  }
+
+  const getCartCount = () => {
+    let totalCount = 0;
+  
+    for (const items in cartItems) {
+      if (cartItems[items] && typeof cartItems[items] === 'object') {
+        for (const item in cartItems[items]) {
+          if (cartItems[items][item] > 0) {
+            totalCount += cartItems[items][item];
+          }
+        }
+      }
+    }
+    return totalCount;
+  };
+
+  const updateQuantity = async (itemId, size, quantity) => {
+    const cartData = structuredClone(cartItems);
+  
+    if (quantity === 0) {
+      delete cartData[itemId][size];
+      if (Object.keys(cartData[itemId]).length === 0) {
+        delete cartData[itemId];
+      }
+    } else {
+      cartData[itemId][size] = quantity;
+    }
+  
+    setCartItems(cartData);
+  };
+  
+  const getCartAmount = async () => {
+    let totalAmount = 0;
+  
+    for (const itemId in cartItems) {
+      const cartItem = cartItems[itemId];
+      const itemInfo = products.find(product => product._id === itemId); 
+  
+      if (itemInfo) {
+        for (const size in cartItem) {
+          const quantity = cartItem[size];
+          if (quantity > 0) {
+            totalAmount += itemInfo.price * quantity; 
+          }
+        }
+      }
+    }
+  
+    return totalAmount;
+  };
+  
+  
+  
+
+  useEffect(()=>{
+    console.log(cartItems);
+  },[cartItems])
 
   const value = {
     products,
@@ -18,7 +98,12 @@ const ShopContextProvider = (props) => {
     serach,
     setSearch,
     showSearch,
-    setShowSearch
+    setShowSearch,
+    cartItems,
+    addToCart,
+    getCartCount,
+    updateQuantity,
+    getCartAmount 
   };
 
   return (

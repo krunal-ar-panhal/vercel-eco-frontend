@@ -12,11 +12,19 @@ import Product from './Pages/Product'
 import Navbar from './Components/Navbar'
 import Footer from './Components/Footer'
 import SearchBar from './Components/Search'
+import { Toaster } from 'react-hot-toast';
 
 const App = () => {
   return (
     <BrowserRouter>
       <div className='px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw]'>
+      <Toaster 
+              position="bottom-right" 
+              style={{
+                      background: '#333', 
+                      color: '#fff',       
+                    }} 
+              />
         <Navbar/>
         <SearchBar/>
         <Routes>

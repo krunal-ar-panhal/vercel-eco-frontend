@@ -5,7 +5,7 @@ import RelatedProduct from '../Components/RelatedProduct';
 
 const Product = () => {
   const { productId } = useParams();
-  const { products, currency } = useContext(ShopContext);
+  const { products, currency, addToCart } = useContext(ShopContext);
   const [productData, setProductData] = useState(null);
   const [image, setImage] = useState('');
   const [size, setSize] = useState('');
@@ -53,13 +53,13 @@ const Product = () => {
         <h1 className="text-3xl font-semibold text-gray-800">{productData.name}</h1>
         
         {/* Ratings */}
-        <div className="flex items-center gap-1 mt-3">
+        {/* <div className="flex items-center gap-1 mt-3">
           {[...Array(4)].map((_, i) => (
             <img key={i} src='./star_icon.png' alt="Star" className="w-4 h-4" />
           ))}
           <img src='./star_dull_icon.png' alt="Star" className="w-4 h-4" />
           <p className="text-gray-600 text-sm ml-2">(122)</p>
-        </div>
+        </div> */}
 
         {/* Price */}
         <p className="mt-4 text-3xl font-bold text-orange-600">{currency} {productData.price}</p>
@@ -86,7 +86,7 @@ const Product = () => {
         </div>
 
         {/* Add to Cart Button */}
-        <button className="mt-8 py-3 px-6 rounded-md bg-black text-white font-semibold hover:bg-orange-600 transition active:bg-black">
+        <button onClick={()=>addToCart(productData._id,size)} className="mt-8 py-3 px-6 rounded-md bg-black text-white font-semibold hover:bg-orange-600 transition active:bg-black">
           ADD TO CART
         </button>
 
