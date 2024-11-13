@@ -1,11 +1,64 @@
-import React, { useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
+import { ShopContext } from '../Context/ShopContext';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 const Login = () => {
   const [currentState, setCurrentState] = useState('Login');
+  const {token, setToken} = useContext(ShopContext)
+
+  const [name, setName] = useState('')
+  const [email, setEmail] = useState('')
+  const [password, setPassword] = useState('')
+
+  const navigate = useNavigate()
 
   const submitHandler = async (e) => {
-    e.preventDefault();
+    try {
+      e.preventDefault();
+      if (currentState === "Sign Up") {
+        const response = await axios.post('/api/user/signup',{
+          name, email, password
+        })
+        console.log(response);
+        if (response.data.success) {
+          setToken(response.data.token)
+          localStorage.setItem('token',response.data.token)
+          toast.success(response.data.message)
+          navigate('/login')
+        }
+        
+      } else {
+        const response = await axios.post('/api/user/signin',{
+           email, password
+        })
+        console.log(response);
+        if (response.data.success) {
+          setToken(response.data.token)
+          localStorage.setItem('token',response.data.token)
+          toast.success(response.data.message)
+        }
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message)
+    }
   };
+
+    useEffect(()=>{
+      if (token) {
+        navigate('/')
+      }
+    },[token])
+
+    useEffect(() => {
+      const storedToken = localStorage.getItem("token");
+      if (!token && storedToken) {
+        setToken(storedToken);
+      }
+    }, []);
+    
 
   return (
     <div className="flex justify-center items-center min-h-screen ">
@@ -18,6 +71,8 @@ const Login = () => {
         {/* Conditionally render the "Name" input field */}
         {currentState !== 'Login' && (
           <input
+            onChange={(e)=>setName(e.target.value)}
+            value={name}
             type="text"
             placeholder="Full Name"
             required
@@ -25,12 +80,16 @@ const Login = () => {
           />
         )}
         <input
+          onChange={(e)=>setEmail(e.target.value)}
+          value={email}
           type="email"
           placeholder="Email"
           required
           className="w-full p-3 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
         />
         <input
+          onChange={(e)=>setPassword(e.target.value)}
+          value={password}
           type="password"
           placeholder="Password"
           required
