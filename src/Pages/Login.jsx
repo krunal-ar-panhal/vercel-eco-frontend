@@ -8,7 +8,7 @@ const Login = () => {
   };
 
   return (
-    <div className="flex justify-center items-center min-h-screen">
+    <div className="flex justify-center items-center min-h-screen ">
       <form onSubmit={submitHandler} className="bg-white p-8 rounded-lg shadow-lg w-full sm:w-96">
         <h2 className="text-2xl font-semibold text-gray-700 mb-4 text-center">
           {currentState} Form

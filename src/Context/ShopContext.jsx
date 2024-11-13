@@ -1,7 +1,6 @@
+import axios from "axios";
 import { createContext, useEffect, useState } from "react";
-import { products } from "../../public/assets";
 import toast from "react-hot-toast";
-console.log(products);
 
 export const ShopContext = createContext();
 
@@ -11,6 +10,9 @@ const ShopContextProvider = (props) => {
   const [serach , setSearch] = useState('')
   const [showSearch, setShowSearch] = useState(false)
   const [cartItems, setCartItems] = useState({})
+  const [products, setProdcts] = useState([])
+  console.log(products);
+  
 
   const addToCart = async (itemId,size) => {
     let cartData = structuredClone(cartItems)
@@ -83,7 +85,25 @@ const ShopContextProvider = (props) => {
   
     return totalAmount;
   };
+
+  const getProductData = async () => {
+    try {
+      const response = await axios.get('/api/product/list')
+      if (response.data.success) {
+        setProdcts(response.data.products)
+      } else {
+        toast.error(response.data.message)
+      }
+    } catch (error) {
+      console.log(error);
+      toast.error(error.message)
+      
+    }
+  }
   
+  useEffect(()=>{
+    getProductData()
+  },[ ])
   
   
 
