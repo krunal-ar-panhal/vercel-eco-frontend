@@ -4,7 +4,7 @@ import { ShopContext } from "../Context/ShopContext";
 
 const Navbar = () => {
   const [visible, setVisible] = useState(false);
-
+  const [isOpen, setIsOpen] = useState(false);
   const navigate = useNavigate()
   const {setShowSearch, getCartCount, token , setToken, setCartItems} = useContext(ShopContext)
 
@@ -14,6 +14,16 @@ const Navbar = () => {
     setCartItems({})
     navigate('/login')
   }
+
+  const toggleDropdown = () => {
+    setIsOpen(!isOpen); // Toggle dropdown visibility
+  };
+
+  const handleLoginClick = () => {
+    if (!token) {
+      navigate("/login"); // Redirect to login if not logged in
+    }
+  };
 
   return (
     <div className="flex items-center justify-between py-5 font-medium">
@@ -41,22 +51,24 @@ const Navbar = () => {
         </div>
         {/* Profile icon with dropdown */}
         
-        <div className="group relative">
-          <img
-            onClick={()=> token ? null : navigate('/login')}
-            className="w-5 cursor-pointer"
-            src="./profile_icon.png"
-            alt="Profile"
-          />
-          {token && 
-          <div className="group-hover:block hidden absolute dropdown-menu right-0 pt-4">
-            <div className="flex flex-col gap-2 w-36 py-3 px-5 bg-slate-100">
-              <p className="cursor-pointer hover:text-black">My Profile</p>
-              <p onClick={()=>navigate('/order')} className="cursor-pointer hover:text-black">Orders</p>
-              <p onClick={logout} className="cursor-pointer hover:text-black">Logout</p>
-            </div>
-          </div>}
+     <div className="relative">
+      <img
+        className="w-5 cursor-pointer"
+        src="./profile_icon.png"
+        alt="Profile"
+        onClick={toggleDropdown}
+      />
+      
+      {token && isOpen && (
+        <div className="absolute right-0 mt-2 w-48 bg-white border border-gray-300 rounded shadow-lg">
+          <ul className="text-black" onClick={()=>setIsOpen(false)}>
+            <li className="px-4 py-2 hover:bg-gray-200 cursor-pointer">My Profile</li>
+            <li onClick={()=>navigate('/order')} className="px-4 py-2 hover:bg-gray-200 cursor-pointer">Order</li>
+            <li onClick={logout} className="px-4 py-2 hover:bg-gray-200 cursor-pointer">Logout</li>
+          </ul>
         </div>
+      )}
+    </div>
 
         {/* Cart icon */}
         <Link to="/cart" className="relative">
