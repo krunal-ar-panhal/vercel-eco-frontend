@@ -11,7 +11,7 @@ const ShopContextProvider = (props) => {
   const [showSearch, setShowSearch] = useState(false)
   const [cartItems, setCartItems] = useState({})
   const [products, setProdcts] = useState([])
-  const [token, setToken] = useState('')
+  const [token, setToken] = useState('');
   console.log(products);
   
 
@@ -35,6 +35,19 @@ const ShopContextProvider = (props) => {
       cartData[itemId][size] =1
     }
     setCartItems(cartData)
+
+    if (token) {
+      try {
+        const response = await axios.post('/api/cart/add', { itemId, size }, { headers: { token } });
+        console.log("Add to cart response:", response);
+        toast.success("Item added to cart!");
+      } catch (error) {
+        console.log("Add to cart error:", error);
+        toast.error(error.message);
+      }
+    } else {
+      toast.error("You need to be logged in to add items to the cart.");
+    }
   }
 
   const getCartCount = () => {
@@ -65,6 +78,18 @@ const ShopContextProvider = (props) => {
     }
   
     setCartItems(cartData);
+    if (token) {
+      try {
+        const response = await axios.post('/api/cart/update', { itemId, size, quantity }, { headers: { token } });
+        console.log("update to cart response:", response);
+        toast.success(response.data.message);
+      } catch (error) {
+        console.log("update to cart error:", error);
+        toast.error(error.message);
+      }
+    } else {
+      toast.error("You need to be logged in to add items to the cart.");
+    }
   };
   
   const getCartAmount = async () => {
@@ -101,10 +126,37 @@ const ShopContextProvider = (props) => {
       
     }
   }
+
+    const getUserCart = async ( storedToken ) => {
+        try {
+          const response = await axios.get('/api/cart/get',{headers:{token:storedToken}})
+          console.log("get user cart response",response);
+          console.log("get user cart token",storedToken);
+          if (response.data.success) {
+            setCartItems(response.data.cartData)
+            // toast.success(response.data.message)
+          }else{
+            toast.error(response.data.message)
+            console.log(response.data.message);
+            
+          }
+        } catch (error) {
+          console.log(error);
+          toast.error(error.message)
+        }
+    }
   
   useEffect(()=>{
     getProductData()
   },[ ])
+
+  useEffect(() => {
+    const storedToken = localStorage.getItem("token");
+    if (!token && storedToken) {
+      setToken(storedToken);
+      getUserCart(storedToken)
+    }
+  }, []);
   
   
 
