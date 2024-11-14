@@ -92,7 +92,7 @@ const ShopContextProvider = (props) => {
     }
   };
   
-  const getCartAmount = async () => {
+  const getCartAmount =  () => {
     let totalAmount = 0;
   
     for (const itemId in cartItems) {
@@ -108,8 +108,11 @@ const ShopContextProvider = (props) => {
         }
       }
     }
-  
+    console.log("total amount",totalAmount);
+    
     return totalAmount;
+    
+    
   };
 
   const getProductData = async () => {
