@@ -16,13 +16,11 @@ const Navbar = () => {
   }
 
   const toggleDropdown = () => {
-    setIsOpen(!isOpen); // Toggle dropdown visibility
-  };
-
-  const handleLoginClick = () => {
-    if (!token) {
-      navigate("/login"); // Redirect to login if not logged in
-    }
+    if (token) {
+      setIsOpen(!isOpen); 
+    } else {
+      navigate("/login"); 
+    } 
   };
 
   return (

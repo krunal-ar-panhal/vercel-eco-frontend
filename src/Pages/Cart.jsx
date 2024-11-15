@@ -2,11 +2,13 @@ import React, { useContext, useEffect, useState } from 'react';
 import { ShopContext } from '../Context/ShopContext';
 import Title from '../Components/Title';
 import CartTotal from '../Components/CartTotal';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import toast from 'react-hot-toast';
 
 const Cart = () => {
-  const { products, currency, cartItems, updateQuantity } = useContext(ShopContext);
+  const { products, currency, cartItems, updateQuantity, token } = useContext(ShopContext);
   const [cartData, setCartData] = useState([]);
+  const navigate = useNavigate()
 
   useEffect(() => {
     if (products.length > 0) {
@@ -28,6 +30,16 @@ const Cart = () => {
     }
     
   }, [cartItems,products]);
+
+  const handleCheckout = () => {
+    if (!token) {
+      toast.error("You need to be logged in to proceed to checkout.");
+    } else if (cartData.length === 0) {
+      toast.error("Please add items to the cart before proceeding to checkout.");
+    } else {
+      navigate('/place');
+    }
+  };
 
   return (
     <div className="pt-14 px-4 sm:px-8">
@@ -84,9 +96,7 @@ const Cart = () => {
         <div className='w-full sm:w-[450px]'>
           <CartTotal/>
           <div className='w-full text-end'>
-            <Link to='/place'>
-            <button className='bg-black text-white text-sm my-8 px-8 py-3'>PROCEED TO CHECKOUT</button>
-            </Link>
+            <button onClick={handleCheckout} className='bg-black text-white text-sm my-8 px-8 py-3'>PROCEED TO CHECKOUT</button>
           </div>
         </div>
       </div>
