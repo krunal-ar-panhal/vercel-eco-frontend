@@ -2,6 +2,7 @@ import React, { useContext, useEffect, useState } from "react";
 import { ShopContext } from "../Context/ShopContext";
 import Title from "../Components/Title";
 import ProductItem from "../Components/ProductItem";
+import axios from "axios";
 
 const Collection = () => {
   const { products, serach, showSearch } = useContext(ShopContext);
@@ -9,9 +10,21 @@ const Collection = () => {
   const [filterProducts, setFilterProducts] = useState([]);
   const [category, setCategory] = useState([]);
   const [subCategory, setSubCategory] = useState([]);
-  const [sortType , setSortType] = useState('')
+  const [sortType, setSortType] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const productsPerPage = 15;
+  const [availableColors, setAvailableColors] = useState([]);  
+  const [selectedColors, setSelectedColors] = useState([]);
+
+  useEffect(() => {
+    const colors = new Set();
+    products.forEach((product) => {
+      if (product.color) {
+        colors.add(product.color);
+      }
+    });
+    setAvailableColors([...colors]);
+  }, [products]);
 
   const toggleCategory = (e) => {
     if (category.includes(e.target.value)) {
@@ -29,42 +42,67 @@ const Collection = () => {
     }
   };
 
+  const toggleColor = (e) => {
+    if (selectedColors.includes(e.target.value)) {
+      setSelectedColors((prev) => prev.filter((item) => item !== e.target.value));
+    } else {
+      setSelectedColors((prev) => [...prev, e.target.value]);
+    }
+  };
+
   const applyFilter = () => {
     let productsCopy = [...products]; 
     if (category.length > 0) {
-      productsCopy = productsCopy.filter((item) =>
-        category.includes(item.category)
-      );
-    }
-    if (showSearch && serach) {
-      productsCopy = productsCopy.filter(item => item.name.toLowerCase().includes(serach.toLowerCase()))
+      productsCopy = productsCopy.filter((item) => category.includes(item.category));
     }
     if (subCategory.length > 0) {
+      productsCopy = productsCopy.filter((item) => subCategory.includes(item.subCategory));
+    }
+    if (showSearch && serach) {
       productsCopy = productsCopy.filter((item) =>
-        subCategory.includes(item.subCategory)
+        item.name.toLowerCase().includes(serach.toLowerCase())
       );
     }
+
+    // Filter by selected colors
+    if (selectedColors.length > 0) {
+      productsCopy = productsCopy.filter((item) =>
+        selectedColors.includes(item.color)
+      );
+    }
+
     setFilterProducts(productsCopy);
   };
 
-  
   const sortProduct = () => {
     let fpCopy = filterProducts.slice();
     switch (sortType) {
       case 'low-high':
-        setFilterProducts(fpCopy.sort((a, b) => a.price - b.price)); 
+        setFilterProducts(fpCopy.sort((a, b) => a.price - b.price));
         break;
       case 'high-low':
-        setFilterProducts(fpCopy.sort((a, b) => b.price - a.price)); 
+        setFilterProducts(fpCopy.sort((a, b) => b.price - a.price));
         break;
       default:
-        applyFilter(); 
+        applyFilter();
         break;
     }
   };
-  
-  
-  
+
+  const getCategory = async () => {
+    try {
+      const response = await axios.get('/api/category/get')
+      console.log("category response",response);
+      
+    } catch (error) {
+      console.log("category error",error);
+      
+    }
+  }
+
+  useEffect(()=>{
+    getCategory()
+  },[])
 
   useEffect(() => {
     setFilterProducts(products);
@@ -72,11 +110,11 @@ const Collection = () => {
 
   useEffect(() => {
     applyFilter();
-  }, [category, subCategory, serach, showSearch]);
+  }, [category, subCategory, serach, showSearch, selectedColors]);
 
-  useEffect(()=>{
-    sortProduct()
-  },[sortType])
+  useEffect(() => {
+    sortProduct();
+  }, [sortType]);
 
   // Calculate the products to display for the current page
   const indexOfLastProduct = currentPage * productsPerPage;
@@ -116,78 +154,53 @@ const Collection = () => {
         </p>
 
         {/* Category Filter */}
-        <div
-          className={`border border-gray-300 pl-5 py-3 mt-6 ${
-            showFilter ? "" : "hidden"
-          } sm:block`}
-        >
+        <div className={`border border-gray-300 pl-5 py-3 mt-6 ${showFilter ? "" : "hidden"} sm:block`}>
           <p className="mb-3 text-sm font-medium">CATEGORIES</p>
           <div className="flex flex-col gap-2 text-sm font-light text-gray-700">
             <p className="flex gap-2">
-              <input
-                className="w-3"
-                type="checkbox"
-                value={"Men"}
-                onChange={toggleCategory}
-              />
+              <input className="w-3" type="checkbox" value="Men" onChange={toggleCategory} />
               Men
             </p>
             <p className="flex gap-2">
-              <input
-                className="w-3"
-                type="checkbox"
-                value={"Women"}
-                onChange={toggleCategory}
-              />
+              <input className="w-3" type="checkbox" value="Women" onChange={toggleCategory} />
               Women
             </p>
             <p className="flex gap-2">
-              <input
-                className="w-3"
-                type="checkbox"
-                value={"Kids"}
-                onChange={toggleCategory}
-              />
+              <input className="w-3" type="checkbox" value="Kids" onChange={toggleCategory} />
               Kids
             </p>
           </div>
         </div>
 
         {/* Type Filter */}
-        <div
-          className={`border border-gray-300 pl-5 py-3 mt-6 ${
-            showFilter ? "" : "hidden"
-          } sm:block`}
-        >
+        <div className={`border border-gray-300 pl-5 py-3 mt-6 ${showFilter ? "" : "hidden"} sm:block`}>
           <p className="mb-3 text-sm font-medium">TYPE</p>
           <div className="flex flex-col gap-2 text-sm font-light text-gray-700">
             <p className="flex gap-2">
-              <input
-                className="w-3"
-                type="checkbox"
-                value={"Topwear"}
-                onChange={toggleSubCategory}
-              />{" "}
+              <input className="w-3" type="checkbox" value="Topwear" onChange={toggleSubCategory} />
               Topwear
             </p>
             <p className="flex gap-2">
-              <input
-                className="w-3"
-                type="checkbox"
-                value={"Bottomwear"}
-                onChange={toggleSubCategory}
-              />{" "}
+              <input className="w-3" type="checkbox" value="Bottomwear" onChange={toggleSubCategory} />
               Bottomwear
             </p>
             <p className="flex gap-2">
-              <input
-                className="w-3"
-                type="checkbox"
-                value={"Winterwear"}
-                onChange={toggleSubCategory}
-              />{" "}
+              <input className="w-3" type="checkbox" value="Winterwear" onChange={toggleSubCategory} />
               Winterwear
             </p>
+          </div>
+        </div>
+
+        {/* Color Filter */}
+        <div className={`border border-gray-300 pl-5 py-3 mt-6 ${showFilter ? "" : "hidden"} sm:block`}>
+          <p className="mb-3 text-sm font-medium">COLOR</p>
+          <div className="flex flex-col gap-2 text-sm font-light text-gray-700">
+            {availableColors.map((color, index) => (
+              <p key={index} className="flex gap-2">
+                <input className="w-3" type="checkbox" value={color} onChange={toggleColor} />
+                {color}
+              </p>
+            ))}
           </div>
         </div>
       </div>
@@ -197,7 +210,7 @@ const Collection = () => {
         <div className="flex justify-between text-base sm:text-2xl mb-4">
           <Title text1={"ALL"} text2={"COLLECTIONS"} />
           {/* Product Sort */}
-          <select onChange={(e)=>setSortType(e.target.value)} className="border-2 border-gray-300 text-sm px-2">
+          <select onChange={(e) => setSortType(e.target.value)} className="border-2 border-gray-300 text-sm px-2">
             <option value="relavent">Sort by: Relavent</option>
             <option value="low-high">Sort by: Low to High</option>
             <option value="high-low">Sort by: High to Low</option>
@@ -220,9 +233,7 @@ const Collection = () => {
         {/* Pagination Controls */}
         <div className="flex justify-center mt-6">
           <button
-            className={`px-4 py-2 border rounded-l-lg ${
-              currentPage === 1 ? "bg-gray-300" : "bg-gray-500 text-white"
-            }`}
+            className={`px-4 py-2 border rounded-l-lg ${currentPage === 1 ? "bg-gray-300" : "bg-gray-500 text-white"}`}
             onClick={() => paginate(currentPage - 1)}
             disabled={currentPage === 1}
           >
@@ -232,11 +243,7 @@ const Collection = () => {
             {currentPage} / {totalPages}
           </span>
           <button
-            className={`px-4 py-2 border rounded-r-lg ${
-              currentPage === totalPages
-                ? "bg-gray-300"
-                : "bg-gray-500 text-white"
-            }`}
+            className={`px-4 py-2 border rounded-r-lg ${currentPage === totalPages ? "bg-gray-300" : "bg-gray-500 text-white"}`}
             onClick={() => paginate(currentPage + 1)}
             disabled={currentPage === totalPages}
           >

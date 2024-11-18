@@ -1,5 +1,5 @@
-import React from 'react'
-import {BrowserRouter,Routes,Route} from 'react-router-dom'
+import React, { useContext } from 'react'
+import {BrowserRouter,Routes,Route, Navigate} from 'react-router-dom'
 import Home from './Pages/Home'
 import About from './Pages/About'
 import Cart from './Pages/Cart'
@@ -13,18 +13,20 @@ import Navbar from './Components/Navbar'
 import Footer from './Components/Footer'
 import SearchBar from './Components/Search'
 import { Toaster } from 'react-hot-toast';
+import { ShopContext } from './Context/ShopContext'
 
 const App = () => {
+
+  const {token} = useContext(ShopContext)
+
+  const privateRoute = ({element}) => {
+    return token ? element : <Navigate to='/login'/>
+  }
+
   return (
     <BrowserRouter>
       <div className='px-4 sm:px-[5vw] md:px-[7vw] lg:px-[9vw]'>
-      <Toaster 
-              position="bottom-right" 
-              style={{
-                      background: '#333', 
-                      color: '#fff',       
-                    }} 
-              />
+      <Toaster position="bottom-right" />
         <Navbar/>
         <SearchBar/>
         <Routes>
@@ -34,9 +36,9 @@ const App = () => {
           <Route path='/collection' element={<Collection/>}/>
           <Route path='/contact' element={<Contact/>}/>
           <Route path='/login' element={<Login/>}/>
-          <Route path='/order' element={<Order/>}/>
-          <Route path='/place' element={<PlaceOrder/>}/>
           <Route path='/product/:productId' element={<Product/>}/>
+          <Route path='/place' element={privateRoute({element:<PlaceOrder/>})}/>
+          <Route path='/order' element={privateRoute({element:<Order/>})}/>
         </Routes>
         <Footer/>
       </div>
