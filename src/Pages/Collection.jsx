@@ -3,9 +3,10 @@ import { ShopContext } from "../Context/ShopContext";
 import Title from "../Components/Title";
 import ProductItem from "../Components/ProductItem";
 import axios from "axios";
+import { ProductContext } from "../Context/productContext";
 
 const Collection = () => {
-  const { products, serach, showSearch } = useContext(ShopContext);
+const { products, search, showSearch } = useContext(ProductContext);
   const [showFilter, setShowFilter] = useState(false);
   const [filterProducts, setFilterProducts] = useState([]);
   const [category, setCategory] = useState([]);
@@ -58,9 +59,9 @@ const Collection = () => {
     if (subCategory.length > 0) {
       productsCopy = productsCopy.filter((item) => subCategory.includes(item.subCategory));
     }
-    if (showSearch && serach) {
+    if (showSearch && search) {
       productsCopy = productsCopy.filter((item) =>
-        item.name.toLowerCase().includes(serach.toLowerCase())
+        item.name.toLowerCase().includes(search.toLowerCase())
       );
     }
 
@@ -110,7 +111,7 @@ const Collection = () => {
 
   useEffect(() => {
     applyFilter();
-  }, [category, subCategory, serach, showSearch, selectedColors]);
+  }, [category, subCategory, search, showSearch, selectedColors]);
 
   useEffect(() => {
     sortProduct();

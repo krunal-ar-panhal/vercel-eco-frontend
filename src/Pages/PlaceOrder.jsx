@@ -1,39 +1,41 @@
-  import React, { useContext, useState } from 'react';
-  import Title from '../Components/Title';
-  import CartTotal from '../Components/CartTotal';
-  import { ShopContext } from '../Context/ShopContext';
-  import axios from 'axios';
-  import { useNavigate } from 'react-router-dom';
-  import toast from 'react-hot-toast';
+import React, { useState, useContext } from 'react';
+import CartTotal from '../Components/CartTotal';
+import Title from '../Components/Title';
+import { useNavigate } from 'react-router-dom';
+import { OrderContext } from '../Context/orderContext';
+import { ShopContext } from '../Context/ShopContext';
+import { ProductContext } from '../Context/productContext';
 
-  const PlaceOrder = () => {
-    const [method, setMethod] = useState("cod");
-    const {token, cartItems, setCartItems, getCartAmount, delivery_fee, products} = useContext(ShopContext)
-    const navigate = useNavigate()
-    const [formData, setFormData] = useState({
-      firstName:"",
-      lastName: "",
-      email:"",
-      street: "",
-      city:"",
-      state:"",
-      zipcode:"",
-      country:"",
-      phone:"",
-    })
+const PlaceOrder = () => {
+  const { placeOrder} = useContext(OrderContext);
+  const { cartItems,getCartAmount,delivery_fee  } = useContext(ShopContext);
+  const {products} = useContext(ProductContext)
+  const navigate = useNavigate();
 
-    const onChangeHandler = (e) => {
-      const name = e.target.name
-      const value = e.target.value
-      setFormData(data =>({
-        ...data,[name]:value
-      }))
-    }
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    street: "",
+    city: "",
+    state: "",
+    zipcode: "",
+    country: "",
+    phone: "",
+  });
 
-    const onSubmit = async (e) => {
-      try {
-        e.preventDefault()
-        let orderItems = [];
+  const onChangeHandler = (e) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({ ...prev, [name]: value }));
+  };
+
+ 
+
+  const onSubmit = (e) => {
+    e.preventDefault();
+
+
+         let orderItems = [];
 
   for (const items in cartItems) {
     for (const item in cartItems[items]) {
@@ -61,86 +63,40 @@
     amount: amount,
   };
 
-      switch(method){
-        case 'cod':
-          const response = await axios.post('/api/order/place',orderData,{headers:{token}})
-          console.log("cod response",response);
-          if (response.data.success) {
-            setCartItems({})
-            navigate('/order')
-            toast.success(response.data.success)
-          } else {
-            toast.error(response.data.message)
-          }
-          
-      }
-
-      } catch (error) {
-        console.log(error);
-        toast.error(error.message)
-        
-      }
-    }
-
-    return (
-      <form onSubmit={onSubmit} className="max-w-screen-lg mx-auto p-6 flex flex-col md:flex-row gap-8">
-        {/* LEFT SIDE: Delivery Information */}
-        <div className="w-full md:w-1/2 space-y-4">
-          <Title text1="DELIVERY" text2="INFORMATION" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <input onChange={onChangeHandler} required name='firstName' value={formData.firstName} type="text" placeholder="First Name" className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            <input onChange={onChangeHandler} required name='lastName' value={formData.lastName} type="text" placeholder="Last Name" className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
-          </div>
-          <input onChange={onChangeHandler} required name='email' value={formData.email} type="email" placeholder="Email Address" className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
-          <input onChange={onChangeHandler} required name='street' value={formData.street} type="text" placeholder="Street" className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <input onChange={onChangeHandler} required name='city' value={formData.city} type="text" placeholder="City" className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            <input onChange={onChangeHandler} required name='state' value={formData.state} type="text" placeholder="State" className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
-          </div>
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            <input onChange={onChangeHandler} required name='zipcode' value={formData.zipcode} type="text" placeholder="Zip Code" className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
-            <input onChange={onChangeHandler} required name='country' value={formData.country} type="text" placeholder="Country" className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
-          </div>
-          <input onChange={onChangeHandler} required name='phone' value={formData.phone} type="number" placeholder="Phone" className="w-full p-3 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500" />
-        </div>
-
-        {/* RIGHT SIDE: Cart & Payment Method */}
-        <div className="w-full md:w-1/2 bg-white p-6 shadow-md rounded-md">
-          <div className="mb-6">
-            <CartTotal />
-          </div>
-          <Title text1="PAYMENT" text2="METHOD" />
-          <div className="space-y-4 mt-4">
-            {/* Payment Method Options */}
-            <div
-              onClick={() => setMethod("stripe")}
-              className={`flex items-center gap-3 p-3 cursor-pointer rounded-md ${method === "stripe" ? "bg-green-200" : "bg-gray-100"}`}
-            >
-              <img src="./stripe_logo.png" alt="Stripe" className="w-12" />
-              <p className="text-lg">Stripe</p>
-            </div>
-            <div
-              onClick={() => setMethod("razorpay")}
-              className={`flex items-center gap-3 p-3 cursor-pointer rounded-md ${method === "razorpay" ? "bg-green-200" : "bg-gray-100"}`}
-            >
-              <img src="./razorpay_logo.png" alt="Razorpay" className="w-12" />
-              <p className="text-lg">Razorpay</p>
-            </div>
-            <div
-              onClick={() => setMethod("cod")}
-              className={`flex items-center gap-3 p-3 cursor-pointer rounded-md ${method === "cod" ? "bg-green-200" : "bg-gray-100"}`}
-            >
-              <p className="text-lg">Cash on Delivery</p>
-            </div>
-          </div>
-          <div className="mt-6">
-            <button className="w-full py-3 bg-black text-white text-lg rounded-md hover:bg-gray-800 transition duration-200">
-              PLACE ORDER
-            </button>
-          </div>
-        </div>
-      </form>
-    );
+    placeOrder(orderData, navigate);
   };
 
-  export default PlaceOrder;
+  return (
+    <form onSubmit={onSubmit} className="max-w-screen-lg mx-auto p-6 flex flex-col md:flex-row gap-8">
+      <div className="w-full md:w-1/2 space-y-4">
+        <Title text1="DELIVERY" text2="INFORMATION" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <input required name='firstName' value={formData.firstName} onChange={onChangeHandler} placeholder="First Name" className="w-full p-3 border rounded-md" />
+          <input required name='lastName' value={formData.lastName} onChange={onChangeHandler} placeholder="Last Name" className="w-full p-3 border rounded-md" />
+        </div>
+        <input required name='email' value={formData.email} onChange={onChangeHandler} placeholder="Email" className="w-full p-3 border rounded-md" />
+        <input required name='street' value={formData.street} onChange={onChangeHandler} placeholder="Street" className="w-full p-3 border rounded-md" />
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <input required name='city' value={formData.city} onChange={onChangeHandler} placeholder="City" className="w-full p-3 border rounded-md" />
+          <input required name='state' value={formData.state} onChange={onChangeHandler} placeholder="State" className="w-full p-3 border rounded-md" />
+        </div>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <input required name='zipcode' value={formData.zipcode} onChange={onChangeHandler} placeholder="Zip Code" className="w-full p-3 border rounded-md" />
+          <input required name='country' value={formData.country} onChange={onChangeHandler} placeholder="Country" className="w-full p-3 border rounded-md" />
+        </div>
+        <input required name='phone' value={formData.phone} onChange={onChangeHandler} placeholder="Phone" type="number" className="w-full p-3 border rounded-md" />
+      </div>
+
+      <div className="w-full md:w-1/2 bg-white p-6 shadow rounded-md">
+        <CartTotal />
+        <Title text1="PAYMENT" text2="METHOD" />
+        <div className="mt-4 p-3 bg-green-200 rounded-md text-lg">Cash on Delivery</div>
+        <button type="submit" className="mt-6 w-full py-3 bg-black text-white text-lg rounded-md hover:bg-gray-800">
+          PLACE ORDER
+        </button>
+      </div>
+    </form>
+  );
+};
+
+export default PlaceOrder;

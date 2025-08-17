@@ -1,9 +1,11 @@
 import React, { useContext, useEffect, useState } from "react";
-import { ShopContext } from "../Context/ShopContext";
 import { useLocation } from "react-router-dom";
+import { ProductContext } from "../Context/productContext";
 
-const SearchBar = () => {
-  const { search, setSearch, showSearch, setShowSearch } = useContext(ShopContext);
+const Search = () => {
+  const { search, setSearch, showSearch, setShowSearch } = useContext(ProductContext);
+  console.log("serach", search);
+  
   const [visible, setVisible] = useState(false);
   const location = useLocation();
 
@@ -40,4 +42,4 @@ const SearchBar = () => {
   );
 };
 
-export default SearchBar;
+export default Search;

@@ -4,32 +4,34 @@ import Title from '../Components/Title';
 import CartTotal from '../Components/CartTotal';
 import { Link, useNavigate } from 'react-router-dom';
 import toast from 'react-hot-toast';
+import { UserContext } from '../Context/userContext';
+import { ProductContext } from '../Context/productContext';
 
 const Cart = () => {
-  const { products, currency, cartItems, updateQuantity, token } = useContext(ShopContext);
+  const {  currency, cartItems, updateQuantity } = useContext(ShopContext);
+  const {token} = useContext(UserContext)
+  const {products} = useContext(ProductContext)
   const [cartData, setCartData] = useState([]);
   const navigate = useNavigate()
 
   useEffect(() => {
-    if (products.length > 0) {
-      const tempData = [];
-    for (const items in cartItems) {
-      for (const item in cartItems[items]) {
-        if (cartItems[items][item] > 0) {
-          tempData.push({
-            _id: items,
-            size: item,
-            quantity: cartItems[items][item]
-          });
-        }
+  if (products.length === 0) return;   // Wait for products to load
+
+  const tempData = [];
+  for (const items in cartItems) {
+    for (const item in cartItems[items]) {
+      if (cartItems[items][item] > 0) {
+        tempData.push({
+          _id: items,
+          size: item,
+          quantity: cartItems[items][item]
+        });
       }
     }
-    console.log("cartData", tempData);
+  }
+  setCartData(tempData);
+}, [cartItems, products]);
 
-    setCartData(tempData);
-    }
-    
-  }, [cartItems,products]);
 
   const handleCheckout = () => {
     if (!token) {
