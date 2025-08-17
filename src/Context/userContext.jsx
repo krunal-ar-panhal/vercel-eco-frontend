@@ -11,7 +11,7 @@ export const UserProvider = ({ children }) => {
 
   const login = async (email, password) => {
     try {
-      const res = await axios.post("http://localhost:5000/api/user/signin", {
+      const res = await axios.post("https://vercel-eco-frontend.vercel.app/api/user/signin", {
         email,
         password,
       });
@@ -32,7 +32,7 @@ export const UserProvider = ({ children }) => {
 
   const signup = async (name, email, password) => {
     try {
-      const res = await axios.post("http://localhost:5000/api/user/signup", {
+      const res = await axios.post("https://vercel-eco-frontend.vercel.app/api/user/signup", {
         name,
         email,
         password,
@@ -59,7 +59,7 @@ export const UserProvider = ({ children }) => {
   const updateProfile = async (formData) => {
     try {
       const res = await axios.put(
-        "http://localhost:5000/api/user/update",
+        "https://vercel-eco-frontend.vercel.app/api/user/update",
         formData,
         {
           headers: {
@@ -81,7 +81,7 @@ export const UserProvider = ({ children }) => {
   const fetchUser = async () => {
     if (token) {
       try {
-        const res = await axios.get("http://localhost:5000/api/user/get", {
+        const res = await axios.get("https://vercel-eco-frontend.vercel.app/api/user/get", {
           headers: { token: token },
         });
         if (res.data.success) {
@@ -95,7 +95,7 @@ export const UserProvider = ({ children }) => {
 
    const deleteUser = async () => {
     try {
-      const res = await axios.delete('http://localhost:5000/api/user/delete', {
+      const res = await axios.delete('https://vercel-eco-frontend.vercel.app/api/user/delete', {
         headers: { token }
       });
 

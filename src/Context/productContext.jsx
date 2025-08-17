@@ -12,7 +12,7 @@ export const ProductProvider = ({ children }) => {
 
   const fetchProducts = async () => {
     try {
-      const response = await axios.get('http://localhost:5000/api/product/list');
+      const response = await axios.get('https://vercel-eco-frontend.vercel.app/api/product/list');
       if (response.data.success) {
         setProducts(response.data.products);
       } else {
@@ -26,7 +26,7 @@ export const ProductProvider = ({ children }) => {
 
   const removeProduct = async (id) => {
     try {
-      const response = await axios.delete('http://localhost:5000/api/product/remove', {
+      const response = await axios.delete('https://vercel-eco-frontend.vercel.app/api/product/remove', {
         data: { id },
         headers: { token },
       });
@@ -45,7 +45,7 @@ export const ProductProvider = ({ children }) => {
 
   const addProduct = async (formData) => {
     try {
-      const response = await axios.post('http://localhost:5000/api/product/add', formData, {
+      const response = await axios.post('https://vercel-eco-frontend.vercel.app/api/product/add', formData, {
         headers: { token },
       });
 

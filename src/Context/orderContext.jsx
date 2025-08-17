@@ -17,7 +17,7 @@ export const OrderProvider = ({ children }) => {
   const fetchUserOrders = async () => {
     try {
       setLoading(true);
-      const res = await axios.post('http://localhost:5000/api/order/userorder', {}, { headers: { token } });
+      const res = await axios.post('https://vercel-eco-frontend.vercel.app/api/order/userorder', {}, { headers: { token } });
       if (res.data.success) {
         let allItems = [];
         res.data.orders.forEach(order => {
@@ -43,7 +43,7 @@ export const OrderProvider = ({ children }) => {
   const fetchAdminOrders = async () => {
     try {
       setLoading(true);
-      const res = await axios.get('http://localhost:5000/api/order/list', { headers: { token } });
+      const res = await axios.get('https://vercel-eco-frontend.vercel.app/api/order/list', { headers: { token } });
       console.log("admin res",res);
       
       if (res.data.success) {
@@ -62,7 +62,7 @@ export const OrderProvider = ({ children }) => {
   // Place new order
   const placeOrder = async (orderData, navigate) => {
     try {
-      const res = await axios.post('http://localhost:5000/api/order/place', orderData, { headers: { token } });
+      const res = await axios.post('https://vercel-eco-frontend.vercel.app/api/order/place', orderData, { headers: { token } });
       if (res.data.success) {
         setCartItems({});
         navigate('/order');
@@ -80,7 +80,7 @@ export const OrderProvider = ({ children }) => {
   // Update order status (Admin)
   const updateOrderStatus = async (orderId, newStatus) => {
     try {
-      const res = await axios.post('http://localhost:5000/api/order/status', { orderId, status: newStatus }, { headers: { token } });
+      const res = await axios.post('https://vercel-eco-frontend.vercel.app/api/order/status', { orderId, status: newStatus }, { headers: { token } });
       if (res.data.success) {
         toast.success('Order status updated');
         fetchAdminOrders();

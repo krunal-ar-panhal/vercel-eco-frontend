@@ -33,7 +33,7 @@ export const ShopProvider = ({ children }) => {
 
     if (token) {
       try {
-        await axios.post('http://localhost:5000/api/cart/add', { itemId, size }, { headers: { token } });
+        await axios.post('https://vercel-eco-frontend.vercel.app/api/cart/add', { itemId, size }, { headers: { token } });
         toast.success("Item added to cart!");
       } catch (error) {
         console.error(error);
@@ -70,7 +70,7 @@ export const ShopProvider = ({ children }) => {
 
     if (token) {
       try {
-        const response = await axios.post('http://localhost:5000/api/cart/update', { itemId, size, quantity }, { headers: { token } });
+        const response = await axios.post('https://vercel-eco-frontend.vercel.app/api/cart/update', { itemId, size, quantity }, { headers: { token } });
         toast.success(response.data.message);
       } catch (error) {
         console.error(error);
@@ -101,7 +101,7 @@ export const ShopProvider = ({ children }) => {
 
   const getUserCart = async (storedToken) => {
     try {
-      const response = await axios.get('http://localhost:5000/api/cart/get', { headers: { token: storedToken } });
+      const response = await axios.get('https://vercel-eco-frontend.vercel.app/api/cart/get', { headers: { token: storedToken } });
       if (response.data.success) {
         setCartItems(response.data.cartData);
          localStorage.setItem('cart', JSON.stringify(response.data.cartData));
